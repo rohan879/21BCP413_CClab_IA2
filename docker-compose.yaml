@@ -1,0 +1,51 @@
+version: '3'
+services:
+  app-server:
+    image: rohanshah571/21bcp413-cclab-ia2:server
+    container_name: 21BCP413-app-server
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+  web-server:
+    image: rohanshah571/21bcp413-cclab-ia2:client
+    container_name: 21BCP413-web-server
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rohan
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    networks:
+      - app-network
+    volumes:
+      - app-volume:/data/db
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: rohan
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_MONGODB_SERVER: mongo
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+    volumes:
+      - app-volume:/data/db
+  
+volumes:
+  app-volume:
+    driver: local
+networks:
+  app-network:
+    driver: bridge
